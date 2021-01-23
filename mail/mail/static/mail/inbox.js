@@ -52,5 +52,19 @@ function load_mailbox(mailbox) {
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
+  // Add mailbox code here. 
+
+  fetch(`/emails/${mailbox}`)
+  .then(response => response.json())
+  .then(result => {
+    console.log(result)
+    result.forEach(function(object) {
+      id = object.id;
+      subject = object.subject;
+      console.log(id, subject)
+      document.querySelector('#emails-view').innerHTML = `<div>${id} ${subject}</div>`;
+    })
+  });
+
   document.querySelector('#(mailbox)')
 }
