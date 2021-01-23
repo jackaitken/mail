@@ -59,10 +59,12 @@ function load_mailbox(mailbox) {
   .then(result => {
     console.log(result)
     result.forEach(function(object) {
-      id = object.id;
+      sender = object.sender;
       subject = object.subject;
-      console.log(id, subject)
-      document.querySelector('#emails-view').innerHTML = `<div>${id} ${subject}</div>`;
+      console.log(`${sender}, ${subject}`)
+      const div = document.createElement('div')
+      div.innerHTML = subject + " " + sender;
+      document.querySelector('#emails-view').append(div);
     })
   });
 
