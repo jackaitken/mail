@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+wdocument.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
@@ -16,9 +16,10 @@ function compose_email() {
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
 
-  document.querySelector('#compose-form').onsubmit = function() {
+  document.querySelector('#compose-form').onsubmit = event => {
+    event.preventDefault();
     const recipients = document.querySelector('#compose-recipients').value;
-    const subject = document.querySelector('#compose_subject').value;
+    const subject = document.querySelector('#compose-subject').value;
     const body = document.querySelector('#compose-body').value;
 
     fetch('/emails', {
@@ -32,8 +33,8 @@ function compose_email() {
     .then(response => response.json())
     .then(result => {
       console.log(result);
+      load_mailbox(sent);
     });
-    return false;
   }
 
   // Clear out composition fields
