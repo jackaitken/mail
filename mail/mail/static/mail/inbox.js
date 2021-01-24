@@ -57,17 +57,25 @@ function load_mailbox(mailbox) {
   fetch(`/emails/${mailbox}`)
   .then(response => response.json())
   .then(result => {
-    console.log(result)
     result.forEach(function(object) {
       sender = object.sender;
       subject = object.subject;
       timestamp = object.timestamp;
-      console.log(`${sender}, ${subject}`)
+      read = object.read
       const div = document.createElement('div')
-      div.className = "border border-primary rounded"
-      div.
-      div.innerHTML = sender + " " + subject + " " + timestamp;
+      div.innerHTML = 
+      `
+        <div class="border border-dark rounded" style="padding:10px;">
+        ${sender} ${subject} ${timestamp}
+        </div>
+      `
+      if (read) {
+        div.style = "padding: 5px; background-color:lightgray;"
+      } else {
+        div.style = "padding: 5px; background-color:white;"
+      }
       document.querySelector('#emails-view').append(div);
+      new_div = document.querySelector('#emails-view')
     })
   });
 
