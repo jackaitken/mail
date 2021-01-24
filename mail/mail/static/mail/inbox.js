@@ -61,9 +61,12 @@ function load_mailbox(mailbox) {
     result.forEach(function(object) {
       sender = object.sender;
       subject = object.subject;
+      timestamp = object.timestamp;
       console.log(`${sender}, ${subject}`)
       const div = document.createElement('div')
-      div.innerHTML = subject + " " + sender;
+      div.className = "border border-primary rounded"
+      div.
+      div.innerHTML = sender + " " + subject + " " + timestamp;
       document.querySelector('#emails-view').append(div);
     })
   });
