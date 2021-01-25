@@ -51,33 +51,40 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
-
-  // Add mailbox code here. 
-
+ 
   fetch(`/emails/${mailbox}`)
   .then(response => response.json())
   .then(result => {
     result.forEach(function(object) {
-      sender = object.sender;
-      subject = object.subject;
-      timestamp = object.timestamp;
-      read = object.read
-      const div = document.createElement('div')
+      let id = object.id;
+      let sender = object.sender;
+      let subject = object.subject;
+      let timestamp = object.timestamp;
+      let read = object.read
+      let div = document.createElement('div')
+
+      // Adds to the innerHTML of the above created div
       div.innerHTML = 
       `
-        <div class="border border-dark rounded" style="padding:10px;">
-        ${sender} ${subject} ${timestamp}
-        </div>
+      <div class="list-group" style="padding: 5px;">
+        <a href="/emails/${id}" id="single-email" class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">${sender}</h5>
+            <small class="text-muted" id="read">${read}</small>
+          </div>
+          <p class="mb-1">${subject}</p>
+          <small class="text-muted">${timestamp}</small>
+        </a>
+      </div>
       `
-      if (read) {
-        div.style = "padding: 5px; background-color:lightgray;"
-      } else {
-        div.style = "padding: 5px; background-color:white;"
-      }
+      // Appends the above inside our new div
       document.querySelector('#emails-view').append(div);
-      new_div = document.querySelector('#emails-view')
+      div.addEventListener('click', function () {
+        console.log(`CLICKED ON ${id}`)
+        document.querySelector('#clicked-email-view').style.display = 'block';
+        document.querySelector('#emails-view').style.display = 'none';
+      })
     })
   });
-
   document.querySelector('#(mailbox)')
 }
