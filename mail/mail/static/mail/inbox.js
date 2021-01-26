@@ -32,7 +32,6 @@ function compose_email() {
     })
     .then(response => response.json())
     .then(result => {
-      console.log(result);
       load_mailbox(sent);
     });
   }
@@ -58,7 +57,6 @@ function load_mailbox(mailbox) {
   .then(response => response.json())
   .then(result => {
     result.forEach(function(object) {
-      console.log(result)
       const id = object.id;
       const sender = object.sender;
       const subject = object.subject;
@@ -80,7 +78,6 @@ function load_mailbox(mailbox) {
         </a>
       </div>
       `
-
       // Appends the above inside our new div
       document.querySelector('#emails-view').append(div);
       
@@ -112,8 +109,11 @@ function load_mailbox(mailbox) {
           <div>
             ${body}
           </div>
+          <div style="padding-top:20px;">
+            <button class="btn btn-sm btn-outline-primary" id="reply">Reply</button>
+            <button class="btn btn-sm btn-outline-primary" id="archive">Archive</button>
+          </div>
           `
-
           document.querySelector('#clicked-email-view').append(email_div);
 
           // Mark email as read
@@ -122,6 +122,17 @@ function load_mailbox(mailbox) {
             body: JSON.stringify({
               read: true
             })
+          });
+
+          // This is where we'll handle replies and archive
+          document.querySelector('#archive').addEventListener('click', function () {
+            fetch(`emails/${id}`, {
+              method: 'PUT',
+              body: JSON.stringify({
+                archived: true
+              })
+            });
+            load_mailbox(inbox);
           });
         });
       });
