@@ -48,26 +48,29 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#clicked-email-view').style.display = 'none';
+  document.querySelector('#clicked-email-view').innerHTML = '';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
- 
+
   fetch(`/emails/${mailbox}`)
   .then(response => response.json())
   .then(result => {
     result.forEach(function(object) {
-      let id = object.id;
-      let sender = object.sender;
-      let subject = object.subject;
-      let timestamp = object.timestamp;
-      let read = object.read
-      let div = document.createElement('div')
+      console.log(result)
+      const id = object.id;
+      const sender = object.sender;
+      const subject = object.subject;
+      const timestamp = object.timestamp;
+      const read = object.read
+      const div = document.createElement('div')
 
       // Adds to the innerHTML of the above created div
       div.innerHTML = 
       `
-      <div class="list-group" style="padding: 5px;">
-        <a href="/emails/${id}" id="single-email" class="list-group-item list-group-item-action flex-column align-items-start">
+      <div id="single-email" class="list-group" style="padding: 5px; background-color:white;">
+        <a href="#" id="single-email" class="list-group-item list-group-item-action flex-column align-items-start">
           <div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1">${sender}</h5>
             <small class="text-muted" id="read">${read}</small>
@@ -77,14 +80,52 @@ function load_mailbox(mailbox) {
         </a>
       </div>
       `
+
       // Appends the above inside our new div
       document.querySelector('#emails-view').append(div);
-      div.addEventListener('click', function () {
+      
+      // View clicked email
+      div.addEventListener('click', function() {
         console.log(`CLICKED ON ${id}`)
-        document.querySelector('#clicked-email-view').style.display = 'block';
         document.querySelector('#emails-view').style.display = 'none';
-      })
-    })
+        document.querySelector('#clicked-email-view').style.display = 'block';
+
+        fetch(`/emails/${id}`)
+        .then(response => response.json())
+        .then(result => {
+          const sender = object.sender;
+          const subject = object.subject;
+          const timestamp = object.timestamp;
+          const body = object.body;
+        
+          const email_div = document.createElement('div')
+
+          email_div.innerHTML = `
+          <div>
+            <strong>From: </strong>${sender}
+          </div>
+          <div>
+            <strong>Date Sent: </strong>${timestamp}
+          <div>
+            <strong>Subject: </strong>${subject}
+          </div>
+          <div>
+            ${body}
+          </div>
+          `
+
+          document.querySelector('#clicked-email-view').append(email_div);
+
+          // Mark email as read
+          fetch(`emails/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+              read: true
+            })
+          });
+        });
+      });
+    });
   });
   document.querySelector('#(mailbox)')
 }
