@@ -53,6 +53,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
+  // Show inbox
   fetch(`/emails/${mailbox}`)
   .then(response => response.json())
   .then(result => {
@@ -61,8 +62,8 @@ function load_mailbox(mailbox) {
       const sender = object.sender;
       const subject = object.subject;
       const timestamp = object.timestamp;
-      const read = object.read
-      const div = document.createElement('div')
+      const read = object.read;
+      const div = document.createElement('div');
 
       // Adds to the innerHTML of the above created div
       div.innerHTML = 
@@ -83,7 +84,6 @@ function load_mailbox(mailbox) {
       
       // View clicked email
       div.addEventListener('click', function() {
-        console.log(`CLICKED ON ${id}`)
         document.querySelector('#emails-view').style.display = 'none';
         document.querySelector('#clicked-email-view').style.display = 'block';
 
@@ -94,6 +94,7 @@ function load_mailbox(mailbox) {
           const subject = object.subject;
           const timestamp = object.timestamp;
           const body = object.body;
+          const archived = object.archived;
         
           const email_div = document.createElement('div')
 
@@ -106,7 +107,7 @@ function load_mailbox(mailbox) {
           <div>
             <strong>Subject: </strong>${subject}
           </div>
-          <div>
+          <div style="padding-top: 20px";>
             ${body}
           </div>
           <div style="padding-top:20px;">
@@ -124,19 +125,31 @@ function load_mailbox(mailbox) {
             })
           });
 
-          // This is where we'll handle replies and archive
-          document.querySelector('#archive').addEventListener('click', function () {
-            fetch(`emails/${id}`, {
-              method: 'PUT',
-              body: JSON.stringify({
-                archived: true
+          // Changes 'Archive' to 'Unarchive'
+          if (archived) {
+            document.querySelector('#archive').innerHTML = 'Unarchive'
+            document.querySelector('#archive').addEventListener('click', function () {
+              fetch(`emails/${id}`), {
+                method: 'PUT',
+                body: JSON.stringify({
+                  archived: false
+                })
+              }
+              load_mailbox('archive')
+            })
+          } else {
+            document.querySelector('#archive').addEventListener('click', function () {
+              fetch(`emails/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                  archived: true
+                })
               })
-            });
-            load_mailbox(inbox);
-          });
+              .then(load_mailbox('inbox'))
+            })
+          }
         });
       });
     });
   });
-  document.querySelector('#(mailbox)')
 }
