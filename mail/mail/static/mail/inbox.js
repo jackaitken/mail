@@ -63,16 +63,16 @@ function load_mailbox(mailbox) {
       const subject = object.subject;
       const timestamp = object.timestamp;
       const read = object.read;
+      console.log(read)
       const div = document.createElement('div');
 
       // Adds to the innerHTML of the above created div
       div.innerHTML = 
       `
-      <div id="single-email" class="list-group" style="padding: 5px; background-color:white;">
+      <div class="list-group" style="padding: 5px; background-color:white;">
         <a href="#" id="single-email" class="list-group-item list-group-item-action flex-column align-items-start">
-          <div class="d-flex w-100 justify-content-between">
+          <div id="read-view" class=" d-flex w-100 justify-content-between">
             <h5 class="mb-1">${sender}</h5>
-            <small class="text-muted" id="read">${read}</small>
           </div>
           <p class="mb-1">${subject}</p>
           <small class="text-muted">${timestamp}</small>
@@ -81,8 +81,12 @@ function load_mailbox(mailbox) {
       `
       // Appends the above inside our new div
       document.querySelector('#emails-view').append(div);
+
+      // Check if email already read
+      inbox_div = document.querySelector('#single-email')
+      inbox_div.style.backgroundColor = read ? "lightgray" : "white";
       
-      // View clicked email
+      // View clicked email and hide inbox
       div.addEventListener('click', function() {
         document.querySelector('#emails-view').style.display = 'none';
         document.querySelector('#clicked-email-view').style.display = 'block';
@@ -95,7 +99,6 @@ function load_mailbox(mailbox) {
           const timestamp = object.timestamp;
           const body = object.body;
           const archived = object.archived;
-        
           const email_div = document.createElement('div')
 
           email_div.innerHTML = 
@@ -114,22 +117,24 @@ function load_mailbox(mailbox) {
           `
           document.querySelector('#clicked-email-view').append(email_div);
 
-          // If not in sent email, we should add 'reply' and 'archive/unarchive' buttons
+          // If not in sent email: add 'reply' and 'archive/unarchive' buttons
           if (mailbox != 'sent') {
-            
+
             // Add a reply button
             const reply_button = document.createElement('button');
             reply_button.setAttribute("class", "btn btn-sm btn-outline-primary");
+            reply_button.setAttribute("style", "margin-right: 10px; margin-top: 10px")
             reply_button.textContent = "Reply"
             document.querySelector('#clicked-email-view').appendChild(reply_button);
-
+ 
             // Add an archive button
             const archive_button = document.createElement('button');
             archive_button.setAttribute("class", "btn btn-sm btn-outline-primary");
+            archive_button.setAttribute("style", "margin-top: 10px")
             archive_button.textContent = archived ? "Unarchive" : "Archive";
             document.querySelector('#clicked-email-view').appendChild(archive_button);
 
-            // Mark email as read
+            // Mark clicked email as read
             fetch(`emails/${id}`, {
               method: 'PUT',
               body: JSON.stringify({
