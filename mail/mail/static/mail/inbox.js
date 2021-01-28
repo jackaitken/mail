@@ -32,7 +32,7 @@ function compose_email() {
     })
     .then(response => response.json())
     .then(result => {
-      load_mailbox(sent);
+      load_mailbox('sent');
     });
   }
 
@@ -126,6 +126,32 @@ function load_mailbox(mailbox) {
             reply_button.setAttribute("style", "margin-right: 10px; margin-top: 10px")
             reply_button.textContent = "Reply"
             document.querySelector('#clicked-email-view').appendChild(reply_button);
+
+            reply_button.addEventListener('click', function() {
+              document.querySelector('#clicked-email-view').style.display = 'none';
+              document.querySelector('#compose-view').style.display = 'block';
+
+              document.querySelector('#compose-recipients').value = `${sender}`
+              document.querySelector('#compose-subject').value = `Re: ${subject}`
+              document.querySelector('#compose-body').value = `On ${timestamp}, ${sender} wrote: ${body}`
+
+              document.querySelector('#compose-form').onsubmit = event => {
+                event.preventDefault();
+                fetch('/emails', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    recipients: sender,
+                    subject: subject,
+                    body: document.querySelector('#compose-body').value
+                  })
+                })
+                .then(response => response.json())
+                .then(result => {
+                  load_mailbox('sent');
+                  console.log(result)
+                });
+              }
+            })            
  
             // Add an archive button
             const archive_button = document.createElement('button');
