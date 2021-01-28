@@ -84,7 +84,7 @@ function load_mailbox(mailbox) {
 
       // Check if email already read
       inbox_div = document.querySelector('#single-email')
-      inbox_div.style.backgroundColor = read ? "lightgray" : "white";
+      inbox_div.style.backgroundColor = read ? "lightgray" : "white"
       
       // View clicked email and hide inbox
       div.addEventListener('click', function() {
@@ -133,6 +133,17 @@ function load_mailbox(mailbox) {
             archive_button.setAttribute("style", "margin-top: 10px")
             archive_button.textContent = archived ? "Unarchive" : "Archive";
             document.querySelector('#clicked-email-view').appendChild(archive_button);
+
+            // Archive or Unarchive
+            archive_button.addEventListener('click', function() {
+              fetch(`emails/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                  archived: (archived ? false : true)
+                })
+              })
+              .then(load_mailbox('inbox'))
+            })
 
             // Mark clicked email as read
             fetch(`emails/${id}`, {
